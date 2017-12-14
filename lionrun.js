@@ -1,0 +1,381 @@
+var sound, amplitude, cnv;
+var button, slider, slidervalue, buttonPause, buttonContinue, buttonRestart;
+var lion;
+var level_one_x=[], level_one_y=[], level_two_x=[], level_two_y=[];
+var level;   //gets the volume of the sound.
+var size;
+var count=0;
+var objectNum=15;
+var countchange=200;
+
+//
+var NORTH = 0;
+var EAST = 1;
+var SOUTH =2;
+var WEST=3;
+
+var direction = SOUTH;
+var stepSize = 200;
+var minLength = 10;
+var angleCount = 7;
+var angle;
+var reachedBorder = false;
+var posX;
+var posY;
+var posXcross;
+var posYcross;
+var dWeight = 50;
+
+var img, imgX, imgY;
+
+function preload() {
+  sound=loadSound("in-the-bleak-midwinter.mp3");
+  img=loadImage('left.gif');
+}
+
+
+var max_planets = 100;
+var planets = [];
+function Planet(x, y, vx, vy, sz, c) {
+  this.x = x;
+  this.y = y;
+  this.vx = vx;
+  this.vy = vy;
+  this.sz = sz;
+  this.c = c;
+  this.move = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x<0 || this.x>windowWidth) this.vx = -this.vx;
+    if (this.y<0 || this.y>windowHeight) this.vy = -this.vy;
+  }
+  this.render = function() {
+    noStroke();
+    fill(this.c);
+    ellipse(this.x, this.y, this.sz, this.sz);
+  }
+}
+
+function setup() {
+  //frameRate(30);
+  cnv=createCanvas(400, windowHeight);
+  colorMode(HSB, 360, 100, 100);
+  background(0);
+  amplitude=new p5.Amplitude([0.5]);
+
+
+  //
+/*
+  angle = getRandomAngle(direction);
+  posX = floor(random(width));
+  posY = 5;
+  posXcross = posX;
+  posYcross = posY;
+  */
+
+  var i;
+  for (i=0; i<max_planets; i++) {
+    planets[i] = new Planet(
+      random(0, windowWidth), random(0, windowHeight), 
+      random(-2, 2), random(-2, 2), 
+      random(10, 100), color(random(0, 360), random(0,360), random(0,360)) );
+  }
+
+
+
+
+  slider=createSlider(0, 5, 0, 1);
+  slidervalue=slider.value();
+  slider.position(30, 30);
+
+  imgX=width/2;
+  imgY=height-img.height/3;
+  //image(img, imgX, imgY, img.width/3, img.height/3);
+
+
+  fill(255);
+  textSize(50);
+  textAlign(CENTER);
+
+  text("Just Drink It", width/2, windowHeight/2-50);
+  button=createButton('간편 음료 추천');
+  button.position(width/2-60, height/2);
+  button.size(120, 50);
+  
+  fill(255);
+  textSize(10);
+  text("날씨, 시간에 따라 음료를 추천받을 수 있어요!", width/2, height/2+65);
+  
+  button=createButton('상세 음료 추천');
+  button.position(width/2-60, height/2+90);
+  button.size(120, 50);
+  fill(255);
+  textSize(10);
+  text("기분에 따라 음료를 추천받을 수 있어요!", width/2, height/2+155);
+  
+
+  /*
+  buttonPause=createButton('Pause');
+   buttonPause.position(width-300, 30);
+   buttonPause.size(100, 30);
+   buttonPause.mouseClicked(function() {
+   if (sound.isPlaying()) {
+   sound.stop();
+   noLoop();
+   }
+   }
+   );
+   
+   
+   buttonContinue=createButton('Continue');
+   buttonContinue.position(width-150, 30);
+   buttonContinue.size(100, 30);
+   buttonContinue.mouseClicked(function() {
+   if (!sound.isPlaying()) {
+   sound.play();
+   loop();
+   }
+   }
+   );
+   */
+
+  for (var i=0; i<objectNum; i++) {
+    level_one_x[i]=random(0, width);
+    level_one_y[i]=random(0, height-300);
+  }
+
+  for (var i=0; i<objectNum; i++) {
+    level_two_x[i]=random(400, width);
+    var identifier=random();
+    if (identifier>0.5) {
+      level_two_y[i]=height-40;
+    } else {
+      level_two_y[i]=height-250;
+    }
+  }
+
+  button.mousePressed(gamestart);
+  button.style('border', 'none');
+  noLoop();
+}
+
+
+
+function gamestart() {
+  sound.play();
+
+  cnv.mouseClicked(function() {
+    if (sound.isPlaying()) {
+      sound.stop();
+      noLoop();
+    } else {
+      loop();
+      sound.play();
+    }
+  }
+  );
+
+  background(200, 200, 50);
+  slider.value(++slidervalue);
+  button.remove();
+
+  fill(255);
+
+  loop();
+
+  /*
+ lion.changeAnimation("rightjump");
+   */
+}
+
+function draw() {
+  if (slidervalue==1) {
+
+    background(255);
+    var i;
+    for (i=0; i<max_planets; i++) {
+      planets[i].move();
+      planets[i].render();
+    }
+    
+    fill(255);
+    rect(0, height/2-height/8, width, height/4);
+    fill(0);
+    textSize(10);
+    text("what color do you see first?", width/2, height/2-height/16);
+
+   /* count++;
+    if (count>countchange) {
+      slider.value(++slidervalue);
+    }
+  }
+  */
+
+  if (slidervalue==2) {
+    background(200, 200, 50);
+    noStroke();
+    fill(255);
+    textSize(50);
+
+
+    //image(img, imgX, imgY, img.width/3, img.height/3);
+
+    if (keyIsDown(LEFT_ARROW)) {
+      imgX-=5;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      imgX+=5;
+    }
+    if (keyPressed) {
+      if (key == ' ') {
+        imgY=imgY-5;
+      }
+    }
+
+
+
+    text("LEVEL 2", width/2, 70);
+    for (var i=0; i<objectNum-5; i++) {
+      rect(level_two_x[i], level_two_y[i]+random(-1, 1), 10, 40);
+    }
+
+    for (var i=0; i<objectNum-5; i++) {
+      level_two_x[i]-=random(2, 5);
+      if (level_two_x[i]<0) {
+        level_two_x[i]=width;
+      }
+    }
+    count++;
+    if (count>countchange*2) {
+      slider.value(++slidervalue);
+    }
+  }
+
+  if (slidervalue==3) {
+    background(200, 200, 50);
+    fill(255);
+    textSize(50);
+
+    //image(img, imgX, imgY, img.width/3, img.height/3);
+
+    if (keyIsDown(LEFT_ARROW)) {
+      imgX-=5;
+    }
+    if (keyIsDown(RIGHT_ARROW)) {
+      imgX+=5;
+    }
+
+
+    text("LEVEL 3", width/2, 70);
+
+    // ------ draw dot at current position ------
+    strokeWeight(3);
+    stroke(0, 0, 0);
+    point(posX, posY);
+    // ------ make step ------
+    posX += cos(radians(angle)) * stepSize;
+    posY += sin(radians(angle)) * stepSize;
+    // ------ check if agent is near one of the display borders ------
+    reachedBorder = false;
+    if (posY <= 5) {
+      direction = SOUTH;
+      reachedBorder = true;
+    } else if (posX >= width - 5) {
+      direction = WEST;
+      reachedBorder = true;
+    } else if (posY >= height - 5) {
+      direction = NORTH;
+      reachedBorder = true;
+    } else if (posX <= 5) {
+      direction = EAST;
+      reachedBorder = true;
+    }
+    // if agent is crossing his path or border was reached, then draw a line
+    loadPixels();
+    var currentPixel = get(floor(posX), floor(posY));
+    if (reachedBorder ||
+      (currentPixel[0] != 255 || currentPixel[1] != 255 || currentPixel[2] != 255)) {
+      var distance = dist(posX, posY, posXcross, posYcross);
+      if (distance >= minLength) {
+        strokeWeight(distance / dWeight);
+        stroke(0, 0, 0 );
+        line(posX, posY, posXcross, posYcross);
+      }
+      posXcross = posX;
+      posYcross = posY;
+      angle = getRandomAngle(direction);
+    }
+
+    count++;
+    if (count>countchange*3) {
+      slider.value(++slidervalue);
+    }
+  }
+
+  if (slidervalue==4) {
+    background(200, 200, 50);
+    noStroke();
+    fill(255);
+    textSize(50);
+
+    text("LEVEL 4", width/2, 70);
+
+    count++;
+    if (count>4000) {
+      ++slidervalue;
+    }
+  }
+
+
+  if (slidervalue==5) {
+    background(200, 200, 50);
+    noStroke();
+    fill(255);
+    textSize(50);
+
+    text("LEVEL 5", width/2, 70);
+
+    count++;
+    if (count>5000) {
+      slider.value(++slidervalue);
+    }
+  }
+
+  if (slidervalue==6) {
+    background(200, 200, 50);
+    noStroke();
+    fill(255);
+    textSize(50);
+
+    text("Congradulations!! You Passed Every Stage!!", width/2, 70);
+
+    slidervalue=0;
+    buttonRestart=createButton('RESTART');
+    buttonRestart.position(width/2-50, height/2);
+    buttonRestart.size(100, 30);
+    buttonRestart.mouseClicked(function() {
+      slidervalue=1;
+      count=0;
+    }
+    );
+  }
+}
+
+
+
+function keyPressed() {
+}
+
+
+function keyReleased() {
+  if (keyCode == DELETE || keyCode == BACKSPACE) background(360);
+}
+function getRandomAngle(currentDirection) {
+  var a = random(-80, 80);
+  if (currentDirection == NORTH) return a - 90;
+  if (currentDirection == EAST) return a;
+  if (currentDirection == SOUTH) return a + 90;
+  if (currentDirection == WEST) return a + 180;
+  return;
+}
+}
