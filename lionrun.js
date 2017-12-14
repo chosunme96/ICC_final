@@ -58,7 +58,7 @@ function Planet(x, y, vx, vy, sz, c) {
 
 function setup() {
   //frameRate(30);
-  cnv=createCanvas(400, windowHeight);
+  cnv=createCanvas(windowWidth, windowHeight);
   colorMode(HSB, 360, 100, 100);
   background(0);
   amplitude=new p5.Amplitude([0.5]);
@@ -76,8 +76,8 @@ function setup() {
   var i;
   for (i=0; i<max_planets; i++) {
     planets[i] = new Planet(
-      random(0, windowWidth), random(0, windowHeight), 
-      random(-2, 2), random(-2, 2), 
+      random(0, windowWidth), random(0, windowHeight),
+      random(-2, 2), random(-2, 2),
       random(10, 100), color(random(0, 360), random(0,360), random(0,360)) );
   }
 
@@ -101,18 +101,18 @@ function setup() {
   button=createButton('간편 음료 추천');
   button.position(width/2-60, height/2);
   button.size(120, 50);
-  
+
   fill(255);
   textSize(10);
   text("날씨, 시간에 따라 음료를 추천받을 수 있어요!", width/2, height/2+65);
-  
+
   button=createButton('상세 음료 추천');
   button.position(width/2-60, height/2+90);
   button.size(120, 50);
   fill(255);
   textSize(10);
   text("기분에 따라 음료를 추천받을 수 있어요!", width/2, height/2+155);
-  
+
 
   /*
   buttonPause=createButton('Pause');
@@ -125,8 +125,8 @@ function setup() {
    }
    }
    );
-   
-   
+
+
    buttonContinue=createButton('Continue');
    buttonContinue.position(width-150, 30);
    buttonContinue.size(100, 30);
@@ -197,7 +197,7 @@ function draw() {
       planets[i].move();
       planets[i].render();
     }
-    
+
     fill(255);
     rect(0, height/2-height/8, width, height/4);
     fill(0);
